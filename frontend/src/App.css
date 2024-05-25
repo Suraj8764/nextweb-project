@@ -1,0 +1,114 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+
+
+/* .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.header button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+} */
+
+
+
+
+
+.search-bar {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+ 
+}
+
+.search-bar input {
+  width: 50%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 40px;
+}
+
+
+.add-resource-form {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.add-resource-form label {
+  margin-bottom: 5px;
+}
+.image-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden; /* Ensure the image doesn't overflow */
+}
+
+
+.add-resource-form input,
+.add-resource-form textarea {
+  padding: 10px;
+  font-size: 16px;
+  margin-bottom: 20px;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+}
+
+.add-resource-form button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  align-self: center;
+}
+
+@media (max-width: 768px) {
+  .resource-card {
+    flex: 1 0 46%;
+  }
+}
+
+@media (max-width: 576px) {
+  .resource-card {
+    flex: 1 0 100%;
+  }
+
+  .search-bar input {
+    width: 100%;
+  }
+}
+
+
+
+
+.error-message {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 5px;
+}
+.image-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 20px;
+}
+
+.image-container img {
+  max-width: 60%;
+  max-height: 40%;
+  border-radius: 5px;
+}
