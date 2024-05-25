@@ -24,7 +24,7 @@ const Header = () => {
   return (
     <header className="header">
 <Link to={"/"} style={{ textDecoration: "none",fontStyle:"oblique" }}> 
-        <h1><span style={{fontSize:"3rem",color:"black"}}>R</span>esource <span style={{fontSize:"3rem",color:"black"}}>M</span>anagement <span style={{fontSize:"3rem",color:"black"}}>P</span>ortal</h1>
+        <h1><span style={{fontSize:"3rem",color:"black"}}>R</span><span style={{color:"blue"}}>esource</span> <span style={{fontSize:"3rem",color:"black"}}>M</span>anagement <span style={{fontSize:"3rem",color:"black"}}>P</span>ortal</h1>
       </Link>      
       <div style={{ display: 'flex', gap: '10px', alignItems: 'center', margin: '10px 0' }}>
         {profilePicture ? (

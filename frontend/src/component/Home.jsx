@@ -20,8 +20,13 @@ const Home = () => {
         const response = await axios.get(
           "https://media-content.ccbp.in/website/react-assignment/resources.json"
         );
-        setResources(response.data);
-        setFilteredResources(response.data);
+
+        const localResources = JSON.parse(localStorage.getItem('resources')) || [];
+
+        const combinedResources = [...localResources, ...response.data];
+
+        setResources(combinedResources);
+        setFilteredResources(combinedResources);
         setLoading(false);
       } catch (error) {
         setError("Failed to fetch resources");
@@ -59,6 +64,22 @@ const Home = () => {
     }
   };
 
+  const handleSearchSubmit = () => {
+    if (searchQuery.trim() !== '') {
+      const filteredResults = resources.filter(resource =>
+        resource.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredResources(filteredResults);
+    } else {
+      setFilteredResources(resources);
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+    setFilteredResources(resources);
+  };
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -94,11 +115,16 @@ const Home = () => {
       </div>
 
       <div className="search-bar">
-        <input type="text" value={searchQuery} onChange={handleSearch} />
-
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchQuery}
+          onChange={handleSearch}
+        />
         <i
-          className="fa-solid fa-magnifying-glass"
-          style={{ position: "relative", right: "57rem", gap: 2 }}
+          className={`fa-solid ${searchQuery ? 'fa-times' : 'fa-magnifying-glass'}`}
+          style={{ position: "relative", right: "21rem", cursor: 'pointer' }}
+          onClick={searchQuery ? clearSearch : handleSearchSubmit}
         ></i>
       </div>
 

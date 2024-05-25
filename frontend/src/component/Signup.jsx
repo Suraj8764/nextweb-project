@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
-import { Link,useNavigate } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './Login.css';
 
-const Login = () => {
-  const Navigate=useNavigate()
-  const [credentials, setCredentials] = useState({ Email: '', password: '' });
+const Signup = () => {
+  const [credentials, setCredentials] = useState({ Email: '', password: '', confirmPassword: '' });
   const [errors, setErrors] = useState({});
 
   const validate = () => {
     const errors = {};
     if (!credentials.Email) errors.Email = 'Email is required';
     if (!credentials.password) errors.password = 'Password is required';
+    if (!credentials.confirmPassword) errors.confirmPassword = 'Confirm Password is required';
+    if (credentials.password !== credentials.confirmPassword) errors.confirmPassword = 'Passwords must match';
     return errors;
   };
 
@@ -31,18 +31,12 @@ const Login = () => {
       return;
     }
 
-    const storedCredentials = JSON.parse(localStorage.getItem('userCredentials'));
-    if (
-      storedCredentials &&
-      storedCredentials.Email === credentials.Email &&
-      storedCredentials.password === credentials.password
-    ) {
-      toast.success('Login successful!');
-      Navigate("/")
-      
-    } else {
-      toast.error('Invalid email or password');
-    }
+  
+    localStorage.setItem('userCredentials', JSON.stringify(credentials));
+    toast.success('Signup successful!');
+
+
+    setCredentials({ Email: '', password: '', confirmPassword: '' });
   };
 
   return (
@@ -52,7 +46,7 @@ const Login = () => {
         <Col md={6}>
           <Card>
             <Card.Body>
-              <Card.Title className="text-center mb-4">Login</Card.Title>
+              <Card.Title className="text-center mb-4">Signup</Card.Title>
               <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="Email">
                   <Form.Label>Email</Form.Label>
@@ -82,15 +76,26 @@ const Login = () => {
                   </Form.Control.Feedback>
                 </Form.Group>
 
-                <Button variant="primary" type="submit" className="w-100 mt-4" style={{ borderRadius: '34rem' }}>
-                  Login
+                <Form.Group controlId="confirmPassword" className="mt-3">
+                  <Form.Label>Confirm Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    name="confirmPassword"
+                    value={credentials.confirmPassword}
+                    onChange={handleChange}
+                    isInvalid={!!errors.confirmPassword}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.confirmPassword}
+                  </Form.Control.Feedback>
+                </Form.Group>
+
+                <Button variant="primary" type="submit" className="w-100 mt-4" style={{ borderRadius: "34rem" }}>
+                  Signup
                 </Button>
               </Form>
               <div className="text-center mt-3">
-                <Link to="/forgot-password">Forgot Password?</Link>
-              </div>
-              <div className="text-center mt-2">
-                <Link to="/register">Create an Account</Link>
+                <Link to="/login">Already have an account? Login</Link>
               </div>
             </Card.Body>
           </Card>
@@ -100,4 +105,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;

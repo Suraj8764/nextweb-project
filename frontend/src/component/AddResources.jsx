@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { useNavigate } from 'react-router-dom';
 
 const AddResources = () => {
+  const Navigate=useNavigate();
   const [resource, setResource] = useState({ title: '', description: '', icon_url: '', Link: '', Tag: '', Category: '' });
   const [errors, setErrors] = useState({});
 
@@ -23,59 +26,128 @@ const AddResources = () => {
     setResource({ ...resource, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-    try {
-      await axios.post('https://media-content.ccbp.in/website/react-assignment/add_resource.json', resource);
-      toast.success('Resource added successfully');
-    } catch (error) {
-      toast.error('Failed to add resource');
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length === 0) {
+     
+      let resources = JSON.parse(localStorage.getItem('resources')) || [];
+      resources.push(resource);
+      localStorage.setItem('resources', JSON.stringify(resources));
+
+      toast.success('Resource added successfully!');
+      Navigate("/")
+      setResource({ title: '', description: '', icon_url: '', Link: '', Tag: '', Category: '' });
+    } else {
+      toast.error('Please fill in all the fields correctly.');
     }
   };
 
   return (
-    <div className="container">
-      <div className="form-container">
-        <h1 className="header-title" style={{width:"100px",margin:"auto"}}>Resource</h1>
-        <form className="add-resource-form" onSubmit={handleSubmit}>
-          <label htmlFor="title">Item Title:</label>
-          <input type="text" id="title" name="title" value={resource.title} onChange={handleChange} />
-          {errors.title && <p className="error-message">{errors.title}</p>}
+    <Container className="mt-5">
+      <Row className="justify-content-md-center">
+        <Col md={6}>
+          <Card>
+            <Card.Body>
+              <Card.Title className="text-center mb-4">Add New Resource</Card.Title>
+              <Form onSubmit={handleSubmit}>
+                <Form.Group controlId="title">
+                  <Form.Label>Item Title</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="title"
+                    value={resource.title}
+                    onChange={handleChange}
+                    isInvalid={!!errors.title}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.title}
+                  </Form.Control.Feedback>
+                </Form.Group>
 
-          <label htmlFor="Link">Link:</label>
-          <input type="text" id="Link" name="Link" value={resource.Link} onChange={handleChange} />
-          {errors.Link && <p className="error-message">{errors.Link}</p>}
+                <Form.Group controlId="Link" className="mt-3">
+                  <Form.Label>Link</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="Link"
+                    value={resource.Link}
+                    onChange={handleChange}
+                    isInvalid={!!errors.Link}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.Link}
+                  </Form.Control.Feedback>
+                </Form.Group>
 
-          <label htmlFor="icon_url">Image URL:</label>
-          <input type="text" id="icon_url" name="icon_url" value={resource.icon_url} onChange={handleChange} />
-          {errors.icon_url && <p className="error-message">{errors.icon_url}</p>}
+                <Form.Group controlId="icon_url" className="mt-3">
+                  <Form.Label>Image URL</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="icon_url"
+                    value={resource.icon_url}
+                    onChange={handleChange}
+                    isInvalid={!!errors.icon_url}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.icon_url}
+                  </Form.Control.Feedback>
+                </Form.Group>
 
-          <label htmlFor="Tag">Tag Name:</label>
-          <input type="text" id="Tag" name="Tag" value={resource.Tag} onChange={handleChange} />
-          {errors.Tag && <p className="error-message">{errors.Tag}</p>}
+                <Form.Group controlId="Tag" className="mt-3">
+                  <Form.Label>Tag Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="Tag"
+                    value={resource.Tag}
+                    onChange={handleChange}
+                    isInvalid={!!errors.Tag}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.Tag}
+                  </Form.Control.Feedback>
+                </Form.Group>
 
-          <label htmlFor="Category">Category:</label>
-          <input type="text" id="Category" name="Category" value={resource.Category} onChange={handleChange} />
-          {errors.Category && <p className="error-message">{errors.Category}</p>}
+                <Form.Group controlId="Category" className="mt-3">
+                  <Form.Label>Category</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="Category"
+                    value={resource.Category}
+                    onChange={handleChange}
+                    isInvalid={!!errors.Category}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.Category}
+                  </Form.Control.Feedback>
+                </Form.Group>
 
-          <label htmlFor="description">Description:</label>
-          <textarea id="description" name="description" value={resource.description} onChange={handleChange}></textarea>
-          {errors.description && <p className="error-message">{errors.description}</p>}
+                <Form.Group controlId="description" className="mt-3">
+                  <Form.Label>Description</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    name="description"
+                    value={resource.description}
+                    onChange={handleChange}
+                    isInvalid={!!errors.description}
+                    rows={4}
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errors.description}
+                  </Form.Control.Feedback>
+                </Form.Group>
 
-          <button type="submit" className="submit-button">Create</button>
-        </form>
-        {/* <div className="image-container">
-        <img src="https://media.istockphoto.com/id/1195775373/photo/team-of-professional-it-developers-have-a-meeting-speaker-shows-growth-data-with-graphs.jpg?s=1024x1024&w=is&k=20&c=BYdh0cbFv0_rz2NcIKpIixLsGmYSdBx5EuUCDMTIf7U=" alt="Resource Management" />
-      </div> */}
-      </div>
-      
+                <Button variant="primary" type="submit" className="w-100 mt-4">
+                  Create
+                </Button>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
       <ToastContainer position="bottom-center" />
-    </div>
+    </Container>
   );
 };
 
