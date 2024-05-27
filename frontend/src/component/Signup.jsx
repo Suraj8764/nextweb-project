@@ -1,42 +1,35 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
+
+import { useNavigate } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 
+
+const schema = yup.object().shape({
+  Email: yup.string().email('Invalid email format').required('Email is required'),
+  password: yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
+  confirmPassword: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match').required('Confirm Password is required'),
+});
+
 const Signup = () => {
-  const [credentials, setCredentials] = useState({ Email: '', password: '', confirmPassword: '' });
-  const [errors, setErrors] = useState({});
+  const Navigate=useNavigate()
+  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+    resolver: yupResolver(schema),
+  });
 
-  const validate = () => {
-    const errors = {};
-    if (!credentials.Email) errors.Email = 'Email is required';
-    if (!credentials.password) errors.password = 'Password is required';
-    if (!credentials.confirmPassword) errors.confirmPassword = 'Confirm Password is required';
-    if (credentials.password !== credentials.confirmPassword) errors.confirmPassword = 'Passwords must match';
-    return errors;
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setCredentials({ ...credentials, [name]: value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-
-  
-    localStorage.setItem('userCredentials', JSON.stringify(credentials));
+  const onSubmit = (data) => {
+    localStorage.setItem('userAuth', JSON.stringify(data));
+  const userAuth=  localStorage.setItem('userCredentials', JSON.stringify(data));
+  console.log(userAuth,"userAuth");
     toast.success('Signup successful!');
-
-
-    setCredentials({ Email: '', password: '', confirmPassword: '' });
+    Navigate('/')
+    reset();
   };
 
   return (
@@ -47,46 +40,43 @@ const Signup = () => {
           <Card>
             <Card.Body>
               <Card.Title className="text-center mb-4">Signup</Card.Title>
-              <Form onSubmit={handleSubmit}>
+              <Form onSubmit={handleSubmit(onSubmit)}>
                 <Form.Group controlId="Email">
                   <Form.Label>Email</Form.Label>
                   <Form.Control
+                     style={{position:"relative",right:"1.5rem"}}
                     type="text"
-                    name="Email"
-                    value={credentials.Email}
-                    onChange={handleChange}
+                    {...register('Email')}
                     isInvalid={!!errors.Email}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.Email}
+                    {errors.Email?.message}
                   </Form.Control.Feedback>
                 </Form.Group>
 
                 <Form.Group controlId="password" className="mt-3">
                   <Form.Label>Password</Form.Label>
                   <Form.Control
+                     style={{position:"relative",right:"1.5rem"}}
                     type="password"
-                    name="password"
-                    value={credentials.password}
-                    onChange={handleChange}
+                    {...register('password')}
                     isInvalid={!!errors.password}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.password}
+                    {errors.password?.message}
                   </Form.Control.Feedback>
                 </Form.Group>
 
                 <Form.Group controlId="confirmPassword" className="mt-3">
                   <Form.Label>Confirm Password</Form.Label>
                   <Form.Control
+                     style={{position:"relative",right:"1.5rem"}}
                     type="password"
-                    name="confirmPassword"
-                    value={credentials.confirmPassword}
-                    onChange={handleChange}
+                    {...register('confirmPassword')}
                     isInvalid={!!errors.confirmPassword}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.confirmPassword}
+                    {errors.confirmPassword?.message}
                   </Form.Control.Feedback>
                 </Form.Group>
 
@@ -95,7 +85,7 @@ const Signup = () => {
                 </Button>
               </Form>
               <div className="text-center mt-3">
-                <Link to="/login">Already have an account? Login</Link>
+                <Link to="/">Already have an account? Login</Link>
               </div>
             </Card.Body>
           </Card>

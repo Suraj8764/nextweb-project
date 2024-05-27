@@ -22,7 +22,6 @@ const Home = () => {
         );
 
         const localResources = JSON.parse(localStorage.getItem('resources')) || [];
-
         const combinedResources = [...localResources, ...response.data];
 
         setResources(combinedResources);
@@ -84,6 +83,17 @@ const Home = () => {
     setCurrentPage(page);
   };
 
+  const handleDeleteResource = (resourceToDelete) => {
+    const updatedResources = resources.filter(resource => resource !== resourceToDelete);
+    setResources(updatedResources);
+    setFilteredResources(updatedResources);
+
+    // Update localStorage
+    const localResources = JSON.parse(localStorage.getItem('resources')) || [];
+    const updatedLocalResources = localResources.filter(resource => resource.title !== resourceToDelete.title);
+    localStorage.setItem('resources', JSON.stringify(updatedLocalResources));
+  };
+
   const paginatedResources = filteredResources.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -133,7 +143,7 @@ const Home = () => {
 
       <div className="resource-cards">
         {paginatedResources.map((resource) => (
-          <ResourceCard key={resource.id} resource={resource} />
+          <ResourceCard key={resource.id} resource={resource} onDelete={handleDeleteResource} />
         ))}
       </div>
 

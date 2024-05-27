@@ -28,6 +28,8 @@
     align-items: center;
     margin-bottom: 20px;
     position: relative;
+    margin-left: 17rem;
+    
   }
   
   .search-bar input {
@@ -36,10 +38,11 @@
     font-size: 16px;
     position: relative;
     right: 18rem;
+    border-radius: 12px;
   }
   .search-bar i {
     position: absolute;
-    right: 10px;
+    right: 9px;
     font-size: 20px;
    
   }

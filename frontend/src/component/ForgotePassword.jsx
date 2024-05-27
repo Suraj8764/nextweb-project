@@ -53,7 +53,7 @@ const ForgotPassword = () => {
                 </Button>
               </Form>
               <div className="text-center mt-3">
-                <Link to="/login">Back to Login</Link>
+                <Link to="/">Back to Login</Link>
               </div>
             </Card.Body>
           </Card>

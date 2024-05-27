@@ -1,144 +1,125 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
 
+
+const schema = yup.object().shape({
+  title: yup.string().required('Title is required'),
+  description: yup.string().required('Description is required'),
+  icon_url: yup.string().url('Invalid URL format').required('Image URL is required'),
+  Link: yup.string().url('Invalid URL format').required('Link is required'),
+  Tag: yup.string().required('Tag is required'),
+  Category: yup.string().required('Category is required'),
+});
+
 const AddResources = () => {
-  const Navigate=useNavigate();
-  const [resource, setResource] = useState({ title: '', description: '', icon_url: '', Link: '', Tag: '', Category: '' });
-  const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
+  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+    resolver: yupResolver(schema),
+  });
 
-  const validate = () => {
-    const errors = {};
-    if (!resource.title) errors.title = 'Title is required';
-    if (!resource.description) errors.description = 'Description is required';
-    if (!resource.Link) errors.Link = 'Link is required';
-    if (!resource.icon_url) errors.icon_url = 'Image URL is required';
-    if (!resource.Tag) errors.Tag = 'Tag is required';
-    if (!resource.Category) errors.Category = 'Category is required';
-    return errors;
-  };
+  const onSubmit = (data) => {
+    let resources = JSON.parse(localStorage.getItem('resources')) || [];
+    resources.push(data);
+    localStorage.setItem('resources', JSON.stringify(resources));
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setResource({ ...resource, [name]: value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const validationErrors = validate();
-    setErrors(validationErrors);
-
-    if (Object.keys(validationErrors).length === 0) {
-     
-      let resources = JSON.parse(localStorage.getItem('resources')) || [];
-      resources.push(resource);
-      localStorage.setItem('resources', JSON.stringify(resources));
-
-      toast.success('Resource added successfully!');
-      Navigate("/")
-      setResource({ title: '', description: '', icon_url: '', Link: '', Tag: '', Category: '' });
-    } else {
-      toast.error('Please fill in all the fields correctly.');
-    }
+    toast.success('Resource added successfully!');
+    navigate("/home");
+    reset();
   };
 
   return (
     <Container className="mt-5">
       <Row className="justify-content-md-center">
-        <Col md={6}>
+        <Col md={6} lg={6}>
           <Card>
             <Card.Body>
               <Card.Title className="text-center mb-4">Add New Resource</Card.Title>
-              <Form onSubmit={handleSubmit}>
-                <Form.Group controlId="title">
+              <Form onSubmit={handleSubmit(onSubmit)}>
+                <Form.Group controlId="title" className="mb-2">
                   <Form.Label>Item Title</Form.Label>
-                  <Form.Control
+                  <Form.Control style={{position:"relative",right:"1.5rem"}} className="text-start"
                     type="text"
-                    name="title"
-                    value={resource.title}
-                    onChange={handleChange}
+                    {...register('title')}
                     isInvalid={!!errors.title}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.title}
+                    {errors.title?.message}
                   </Form.Control.Feedback>
                 </Form.Group>
 
-                <Form.Group controlId="Link" className="mt-3">
+                <Form.Group controlId="Link" className="mb-3">
                   <Form.Label>Link</Form.Label>
-                  <Form.Control
+                  <Form.Control style={{position:"relative",right:"1.5rem"}}
                     type="text"
-                    name="Link"
-                    value={resource.Link}
-                    onChange={handleChange}
+                    {...register('Link')}
                     isInvalid={!!errors.Link}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.Link}
+                    {errors.Link?.message}
                   </Form.Control.Feedback>
                 </Form.Group>
 
-                <Form.Group controlId="icon_url" className="mt-3">
+                <Form.Group controlId="icon_url" className="mb-3">
                   <Form.Label>Image URL</Form.Label>
                   <Form.Control
+                  style={{position:"relative",right:"1.5rem"}}
                     type="text"
-                    name="icon_url"
-                    value={resource.icon_url}
-                    onChange={handleChange}
+                    {...register('icon_url')}
                     isInvalid={!!errors.icon_url}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.icon_url}
+                    {errors.icon_url?.message}
                   </Form.Control.Feedback>
                 </Form.Group>
 
-                <Form.Group controlId="Tag" className="mt-3">
+                <Form.Group controlId="Tag" className="mb-3 ">
                   <Form.Label>Tag Name</Form.Label>
                   <Form.Control
+                  style={{position:"relative",right:"1.5rem"}}
                     type="text"
-                    name="Tag"
-                    value={resource.Tag}
-                    onChange={handleChange}
+                    {...register('Tag')}
                     isInvalid={!!errors.Tag}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.Tag}
+                    {errors.Tag?.message}
                   </Form.Control.Feedback>
                 </Form.Group>
 
-                <Form.Group controlId="Category" className="mt-3">
+                <Form.Group controlId="Category" className="mb-3">
                   <Form.Label>Category</Form.Label>
                   <Form.Control
+                  style={{position:"relative",right:"1.5rem"}}
                     type="text"
-                    name="Category"
-                    value={resource.Category}
-                    onChange={handleChange}
+                    {...register('Category')}
                     isInvalid={!!errors.Category}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.Category}
+                    {errors.Category?.message}
                   </Form.Control.Feedback>
                 </Form.Group>
 
-                <Form.Group controlId="description" className="mt-3">
+                <Form.Group controlId="description" className="mb-3">
                   <Form.Label>Description</Form.Label>
                   <Form.Control
+                  style={{position:"relative",right:"0.5rem"}}
                     as="textarea"
-                    name="description"
-                    value={resource.description}
-                    onChange={handleChange}
+                    {...register('description')}
                     isInvalid={!!errors.description}
                     rows={4}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.description}
+                    {errors.description?.message}
                   </Form.Control.Feedback>
                 </Form.Group>
 
-                <Button variant="primary" type="submit" className="w-100 mt-4">
+                <Button variant="primary" type="submit" className="w-100">
                   Create
                 </Button>
               </Form>

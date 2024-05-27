@@ -1,48 +1,43 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
-import { Link,useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Login.css';
+import AuthContext from './AuthContext';
+
+const schema = yup.object().shape({
+  Email: yup.string().email('Invalid email format').required('Email is required'),
+  password: yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
+});
 
 const Login = () => {
-  const Navigate=useNavigate()
-  const [credentials, setCredentials] = useState({ Email: '', password: '' });
-  const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
+  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+    resolver: yupResolver(schema),
+  });
 
-  const validate = () => {
-    const errors = {};
-    if (!credentials.Email) errors.Email = 'Email is required';
-    if (!credentials.password) errors.password = 'Password is required';
-    return errors;
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setCredentials({ ...credentials, [name]: value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-
+  const onSubmit = (data) => {
     const storedCredentials = JSON.parse(localStorage.getItem('userCredentials'));
     if (
       storedCredentials &&
-      storedCredentials.Email === credentials.Email &&
-      storedCredentials.password === credentials.password
+      storedCredentials.Email === data.Email &&
+      storedCredentials.password === data.password
     ) {
+      const user = { Email: storedCredentials.Email, isAuthenticated: true };
+      localStorage.setItem('user', JSON.stringify(user));
+      login(user);
       toast.success('Login successful!');
-      Navigate("/")
-      
+      navigate("/home");
     } else {
       toast.error('Invalid email or password');
     }
+    reset();
   };
 
   return (
@@ -53,32 +48,30 @@ const Login = () => {
           <Card>
             <Card.Body>
               <Card.Title className="text-center mb-4">Login</Card.Title>
-              <Form onSubmit={handleSubmit}>
+              <Form onSubmit={handleSubmit(onSubmit)}>
                 <Form.Group controlId="Email">
                   <Form.Label>Email</Form.Label>
                   <Form.Control
+                  style={{position:"relative",right:"1.5rem"}}
                     type="text"
-                    name="Email"
-                    value={credentials.Email}
-                    onChange={handleChange}
+                    {...register('Email')}
                     isInvalid={!!errors.Email}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.Email}
+                    {errors.Email?.message}
                   </Form.Control.Feedback>
                 </Form.Group>
 
                 <Form.Group controlId="password" className="mt-3">
                   <Form.Label>Password</Form.Label>
                   <Form.Control
+                   style={{position:"relative",right:"1.5rem"}}
                     type="password"
-                    name="password"
-                    value={credentials.password}
-                    onChange={handleChange}
+                    {...register('password')}
                     isInvalid={!!errors.password}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.password}
+                    {errors.password?.message}
                   </Form.Control.Feedback>
                 </Form.Group>
 
